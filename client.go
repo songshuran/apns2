@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"time"
@@ -182,6 +183,12 @@ func (c *Client) PushWithContext(ctx Context, n *Notification) (*Response, error
 	response := &Response{}
 	response.StatusCode = httpRes.StatusCode
 	response.ApnsID = httpRes.Header.Get("apns-id")
+	all, err := ioutil.ReadAll(httpRes.Body)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(fmt.Sprintf("%v", string(all)))
+	}
 	response.OriginResponse = *httpRes
 	decoder := json.NewDecoder(httpRes.Body)
 	if err := decoder.Decode(&response); err != nil && err != io.EOF {
